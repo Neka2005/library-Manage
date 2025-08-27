@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Library Management System</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background: #f4f6f9;
+        padding: 20px;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      form {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      form input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+
+      form button {
+        padding: 10px 15px;
+        border: none;
+        background: #0073e6;
+        color: #fff;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        text-align: center;
+      }
+
+      th {
+        background: #0073e6;
+        color: #fff;
+      }
+
+      .btn {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+
+      .btn-delete {
+        background: #e74c3c;
+        color: #fff;
+      }
+
+      .btn-issue {
+        background: #27ae60;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>📚 Library Management System</h1>
+    <div class="container">
+      <form id="bookForm">
+        <input type="text" id="title" placeholder="Book Title" required />
+        <input type="text" id="author" placeholder="Author" required />
+        <button type="submit">Add Book</button>
+      </form>
+
+      <table id="bookTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <script>
+      const form = document.getElementById("bookForm");
+      const tableBody = document.querySelector("#bookTable tbody");
+
+      let books = JSON.parse(localStorage.getItem("books")) || [];
+
+      function renderBooks() {
+        tableBody.innerHTML = "";
+        books.forEach((book, index) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${book.title}</td>
+          <td>${book.author}</td>
+          <td>${book.issued ? "Issued" : "Available"}</td>
+          <td>
+            <button class="btn btn-issue" onclick="toggleIssue(${index})">
+              ${book.issued ? "Return" : "Issue"}
+            </button>
+            <button class="btn btn-delete" onclick="deleteBook(${index})">Delete</button>
+          </td>
+        `;
+          tableBody.appendChild(row);
+        });
+      }
+
+      function saveBooks() {
+        localStorage.setItem("books", JSON.stringify(books));
+      }
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const title = document.getElementById("title").value;
+        const author = document.getElementById("author").value;
+        books.push({ title, author, issued: false });
+        saveBooks();
+        renderBooks();
+        form.reset();
+      });
+
+      function toggleIssue(index) {
+        books[index].issued = !books[index].issued;
+        saveBooks();
+        renderBooks();
+      }
+
+      function deleteBook(index) {
+        books.splice(index, 1);
+        saveBooks();
+        renderBooks();
+      }
+
+      renderBooks();
+    </script>
+  </body>
+</html>
